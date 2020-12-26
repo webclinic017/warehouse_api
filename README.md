@@ -66,11 +66,19 @@ all database URI's to existing postgres database uri
 cp .env.example .env
 ```
 
-- Run the server
+- Run the server. 
+
+If 'APP_SETTINGS' in the `.env` is not 'production', run the command below
 
 ```bash
 
 python main.py
+```
+
+else run:
+
+```bash
+gunicorn -c python:web_config 'main:create_app()'
 ```
 
 - Open the app docs at [http://localhost:5400/docs](http://localhost:5400/docs) for Swagger docs

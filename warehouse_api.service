@@ -8,7 +8,7 @@ User=<your_user_name>
 TimeoutStartSec=0
 Restart=always
 WorkingDirectory=/home/<your_user_name>/projects/warehouse_api
-ExecStart=/home/<your_user_name>/projects/warehouse_api/env/bin/python main.py
+ExecStart=/home/<your_user_name>/projects/warehouse_api/env/bin/gunicorn -c python:web_config 'main:create_app()'
 
 [Install]
 WantedBy=multi-user.target

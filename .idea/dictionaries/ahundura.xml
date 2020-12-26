@@ -1,7 +1,9 @@
 <component name="ProjectDictionaryState">
   <dictionary name="ahundura">
     <words>
+      <w>gunicorn</w>
       <w>nomics</w>
+      <w>uvicorn</w>
     </words>
   </dictionary>
 </component>
