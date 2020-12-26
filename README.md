@@ -76,6 +76,82 @@ python main.py
 - Open the app docs at [http://localhost:5400/docs](http://localhost:5400/docs) for Swagger docs
  or [http://localhost:5400/redoc](http://localhost:5400/redoc) for ReDoc docs. 
  **(the port corresponds to what you have in your .env file)**
+ 
+### How to Run as a systemd service
+
+- Go to the root of your user
+
+```bash
+
+cd ~
+```
+
+- Create a projects folder there if non-existent and enter it
+
+```bash
+mkdir projects && cd projects
+```
+
+- Clone the repo
+
+```bash
+git clone https://github.com/Tinitto/warehouse_api.git
+```
+
+- Create a virtualenv
+
+```bash
+cd warehouse_api && python3.7 -m venv env
+```
+
+- Activate the virtual environment and install dependencies
+
+```bash
+source env/bin/activate && pip install -r requirements.txt
+```
+
+- Copy the `.example.env` file to `.env` and update the variables in there
+
+```bash
+cp .example.env .env
+```
+
+- Copy the `warehouse_api.service` file to the systemd service folder
+
+```bash
+sudo cp warehouse_api.service /etc/systemd/system/warehouse_api.service
+```
+
+- Update the `<your_user_name>` placeholder in `/etc/systemd/system/warehouse_api.service` with the name 
+of the linux user you are logged in with.
+
+```bash
+sudo nano /etc/systemd/system/warehouse_api.service
+``` 
+
+- Start the service
+
+```bash
+sudo systemctl start warehouse_api.service
+```
+
+- Enable the service to start on start up
+
+```bash
+sudo systemctl enable warehouse_api
+```
+
+- Check the status of the service to see if it is running
+
+```bash
+sudo systemctl status warehouse_api
+```
+
+- Press `q` to exit
+
+- Open the app docs at [http://localhost:5400/docs](http://localhost:5400/docs) for Swagger docs
+ or [http://localhost:5400/redoc](http://localhost:5400/redoc) for ReDoc docs. 
+ **(the port corresponds to what you have in your .env file)**
 
 
 ## How to Test

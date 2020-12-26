@@ -1,0 +1,14 @@
+[Unit]
+Description=Warehouse API Service
+After=network.target
+
+[Service]
+Type=simple
+User=<your_user_name>
+TimeoutStartSec=0
+Restart=always
+WorkingDirectory=/home/<your_user_name>/projects/warehouse_api
+ExecStart=/home/<your_user_name>/projects/warehouse_api/env/bin/python main.py
+
+[Install]
+WantedBy=multi-user.target
