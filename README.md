@@ -124,16 +124,14 @@ exit
 
 - Restart the postgreSQL service to allow the changes to take effect
 
-```
-#!bash
+```bash
 
 sudo systemctl restart postgresql
 ```
 
 - Run the tests with pytest
 
-```
-#!bash
+```bash
 
 pytest
 ```
