@@ -8,11 +8,6 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 
-class WebServiceConfig(BaseModel):
-    host: str = os.environ.get('HOST', '0.0.0.0')
-    http_port: str = os.environ.get('HTTP_PORT', 5400)
-
-
 class WebServiceRouterConfig(BaseModel):
     tag: str
     router: APIRouter
@@ -34,4 +29,3 @@ class MicroserviceListResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
