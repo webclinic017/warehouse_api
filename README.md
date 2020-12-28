@@ -85,6 +85,9 @@ gunicorn -c python:web_config 'main:create_app()'
  or [http://localhost:5400/redoc](http://localhost:5400/redoc) for ReDoc docs. 
  **(the port corresponds to what you have in your .env file)**
  
+ 
+![Demo Warehouse API Docs](.designs/demo_warehouse_api.png)
+ 
 ### How to Run as a systemd service
 
 - Go to the root of your user
@@ -160,6 +163,9 @@ sudo systemctl status warehouse_api
 - Open the app docs at [http://localhost:5400/docs](http://localhost:5400/docs) for Swagger docs
  or [http://localhost:5400/redoc](http://localhost:5400/redoc) for ReDoc docs. 
  **(the port corresponds to what you have in your .env file)**
+ 
+ 
+![Demo Warehouse API Docs](.designs/demo_warehouse_api.png)
 
 
 ## How to Test
