@@ -1,4 +1,4 @@
-"""Test for nomics/currencies microservice"""
+"""Test for nomics/currencies_ticker microservice"""
 import os
 import unittest
 
@@ -14,21 +14,21 @@ finally:
 
 from test.utils.base_test_for_microservices import TestCase
 from test.utils.config import RawDatabaseMockAsset
-from test.utils.mock_models import Currencies
+from test.utils.mock_models import CurrenciesTicker
 
 
-class TestCurrenciesMicroservice(TestCase):
-    """Tests for the nomics currencies microservice"""
+class TestCurrenciesTickerMicroservice(TestCase):
+    """Tests for the nomics currencies_ticker microservice"""
     app = FastAPI()
-    url_path = '/nomics/currencies'
+    url_path = '/nomics/currencies-ticker'
     raw_database_mock_assets = [
         RawDatabaseMockAsset(
             db_uri=os.getenv('NOMICS_LIVE_DB_URI'),
             db_name='nomics_live_db',
-            db_table_name='currencies',
-            model_class=Currencies)]
+            db_table_name='currencies_ticker',
+            model_class=CurrenciesTicker)]
     service_name = 'nomics'
-    microservice_name = 'currencies'
+    microservice_name = 'currencies_ticker'
 
 
 if __name__ == '__main__':

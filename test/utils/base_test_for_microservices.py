@@ -1,7 +1,6 @@
 """Base Class for all tests on Web microservices"""
 import json
 import unittest
-from datetime import datetime, date, timedelta
 from typing import Any, Dict, List, Union, Optional
 
 from fastapi.testclient import TestClient

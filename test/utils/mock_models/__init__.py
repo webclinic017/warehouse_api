@@ -2,5 +2,6 @@
 
 from .config import Base
 
-from test.utils.mock_models.nomics.currencies import Currencies
+from .nomics.currencies import Currencies
+from .nomics.currencies_ticker import CurrenciesTicker
 

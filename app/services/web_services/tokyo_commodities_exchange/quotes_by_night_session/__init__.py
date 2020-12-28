@@ -47,9 +47,13 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
                  microservice_config.default_pagination_limit,
                  le=microservice_config.maximum_pagination_limit)
              ):
-        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
-                                                          product_code=product_code)
-        q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
+        q_from_params = self.generate_q_param_from_params(
+            trade_date=trade_date, update_time=update_time, product_code=product_code).strip()
+
+        if q is None and q_from_params != '':
+            q = q_from_params
+        elif isinstance(q, str) and q_from_params != '':
+            q = f'{q} AND {q_from_params}'
 
         result = self._list(limit=limit, offset=skip, q=q, should_fetch_total=True)
         return dict(data=result.data, total=result.total, skip=skip, limit=limit)
@@ -69,9 +73,6 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
                                  le=microservice_config.maximum_pagination_limit
                              )):
         """Sends list data via the websocket medium"""
-        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
-                                                          product_code=product_code)
-        q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
-
         await super().websocket_list(websocket=websocket, response_model=MicroserviceListResponse,
-                                     q=q, limit=limit, skip=skip)
+                                     q=q, limit=limit, skip=skip, trade_date=trade_date,
+                                     update_time=update_time, product_code=product_code)
