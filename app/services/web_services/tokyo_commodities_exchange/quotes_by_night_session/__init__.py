@@ -33,7 +33,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
     @quotes_by_night_session_router.get('/quotes-by-night-session', response_model=MicroserviceListResponse)
     def list(self,
              q: Optional[str] = Query(
-                 '',
+                 None,
                  title="SQL Query string",
                  description="A more fluid way to filter using actual SQL queries starting with optional 'WHERE'",
                  example="WHERE trade_date = '2020-12-24'::date"
@@ -47,9 +47,13 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
                  microservice_config.default_pagination_limit,
                  le=microservice_config.maximum_pagination_limit)
              ):
-        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
-                                                          product_code=product_code)
-        q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
+        q_from_params = self.generate_q_param_from_params(
+            trade_date=trade_date, update_time=update_time, product_code=product_code).strip()
+
+        if q is None and q_from_params != '':
+            q = q_from_params
+        elif isinstance(q, str) and q_from_params != '':
+            q = f'{q} AND {q_from_params}'
 
         result = self._list(limit=limit, offset=skip, q=q, should_fetch_total=True)
         return dict(data=result.data, total=result.total, skip=skip, limit=limit)
@@ -59,7 +63,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
 
     @quotes_by_night_session_router.websocket('/quotes-by-night-session')
     async def websocket_list(self, websocket: WebSocket,
-                             q: Optional[str] = Query(''),
+                             q: Optional[str] = Query(None),
                              trade_date: Optional[str] = Query(None),
                              update_time: Optional[str] = Query(None),
                              product_code: Optional[str] = Query(None),
@@ -69,9 +73,6 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
                                  le=microservice_config.maximum_pagination_limit
                              )):
         """Sends list data via the websocket medium"""
-        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
-                                                          product_code=product_code)
-        q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
-
         await super().websocket_list(websocket=websocket, response_model=MicroserviceListResponse,
-                                     q=q, limit=limit, skip=skip)
+                                     q=q, limit=limit, skip=skip, trade_date=trade_date,
+                                     update_time=update_time, product_code=product_code)

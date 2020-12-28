@@ -1,8 +1,6 @@
 """Test for nomics/currencies microservice"""
 import os
 import unittest
-from datetime import date
-from typing import Dict, Any
 
 from fastapi import FastAPI
 
