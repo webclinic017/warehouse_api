@@ -33,7 +33,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
     @quotes_by_night_session_router.get('/quotes-by-night-session', response_model=MicroserviceListResponse)
     def list(self,
              q: Optional[str] = Query(
-                 '',
+                 None,
                  title="SQL Query string",
                  description="A more fluid way to filter using actual SQL queries starting with optional 'WHERE'",
                  example="WHERE trade_date = '2020-12-24'::date"
@@ -63,7 +63,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
 
     @quotes_by_night_session_router.websocket('/quotes-by-night-session')
     async def websocket_list(self, websocket: WebSocket,
-                             q: Optional[str] = Query(''),
+                             q: Optional[str] = Query(None),
                              trade_date: Optional[str] = Query(None),
                              update_time: Optional[str] = Query(None),
                              product_code: Optional[str] = Query(None),
