@@ -2,7 +2,7 @@
 Module to house the microservice abstract class
 """
 from asyncio import sleep
-from typing import Union, List, Dict, Callable, Optional, Type
+from typing import Union, List, Dict, Callable, Optional, Type, Any
 from abc import ABC, abstractmethod
 
 import sqlalchemy.engine as sqlalchemy_engine
@@ -28,8 +28,11 @@ class ReadOnlyMicroservice(ABC):
     """
 
     def __init__(self, config: Union[DbQueryConfig, List[DbQueryConfig]],
-                 db_query_results_merger: Callable[[Dict[str, DbQueryReturnType]], DbQueryReturnType] = None):
+                 db_query_results_merger: Callable[[Dict[str, DbQueryReturnType]], DbQueryReturnType] = None,
+                 query_param_cast_map: Dict[str, str] = {}):
         super().__init__()
+
+        self.query_param_cast_map = query_param_cast_map
 
         if isinstance(config, DbQueryConfig):
             self.db_query = DbQuery(config)
@@ -106,3 +109,21 @@ class ReadOnlyMicroservice(ABC):
         """
         raise NotImplementedError(
             'The get_one method should be implemented. You may call the self._get_one method here')
+
+    def _cast_query_param(self, key: str, value: Any):
+        """Casts a given query parameter to the appropriate type as specified in the query_param_cast_map map"""
+        cast_type = self.query_param_cast_map.get(key, None)
+
+        if cast_type is None:
+            return value
+
+        return f"'{value}'::{cast_type}"
+
+    def generate_q_param_from_params(self, **kwargs):
+        """Generates a q query parameter string from other query parameters"""
+        cleaned_params = {
+            key: self._cast_query_param(key=key, value=value)
+            for key, value in kwargs.items() if value is not None}
+
+        query_param_strings = [f'{key} = {value}' for key, value in cleaned_params.items()]
+        return ' AND '.join(query_param_strings)
