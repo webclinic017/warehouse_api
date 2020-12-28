@@ -1,5 +1,5 @@
 """
-Module containing the quotes_by_night_session microservice
+Module containing the quotes_by_trade_date microservice
 """
 from datetime import date, time
 from typing import Optional, Dict
@@ -9,20 +9,20 @@ from app.abstract.services.web_service.readonly_microservice import ReadOnlyMicr
 from fastapi import APIRouter, Query, WebSocket
 from fastapi_utils.cbv import cbv
 
-from .config import QuotesByNightSessionDbQueryConfig
+from .config import QuotesByTradeDateDbQueryConfig
 
-quotes_by_night_session_router = APIRouter()
+quotes_by_trade_date_router = APIRouter()
 microservice_config = MicroserviceConfig()
 
 
-@cbv(quotes_by_night_session_router)
-class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
+@cbv(quotes_by_trade_date_router)
+class QuotesByTradeDateMicroservice(ReadOnlyMicroservice):
     """
-    Returns data for quotes by night session to be displayed in a front end application
+    Returns data for quotes by trade date to be displayed in a front end application
     """
 
     def __init__(self):
-        db_query_config = QuotesByNightSessionDbQueryConfig()
+        db_query_config = QuotesByTradeDateDbQueryConfig()
         query_param_cast_map: Dict[str, str] = {
             'trade_date': 'date',
             'update_time': 'time',
@@ -30,7 +30,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
         }
         super().__init__(config=db_query_config, query_param_cast_map=query_param_cast_map)
 
-    @quotes_by_night_session_router.get('/quotes-by-night-session', response_model=MicroserviceListResponse)
+    @quotes_by_trade_date_router.get('/quotes-by-trade-date', response_model=MicroserviceListResponse)
     def list(self,
              q: Optional[str] = Query(
                  '',
@@ -57,7 +57,7 @@ class QuotesByNightSessionMicroservice(ReadOnlyMicroservice):
     def get_one(self, *args, **kwargs):
         pass
 
-    @quotes_by_night_session_router.websocket('/quotes-by-night-session')
+    @quotes_by_trade_date_router.websocket('/quotes-by-trade-date')
     async def websocket_list(self, websocket: WebSocket,
                              q: Optional[str] = Query(''),
                              trade_date: Optional[str] = Query(None),
