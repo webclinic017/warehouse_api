@@ -1,51 +1,54 @@
 """
-Module containing the currencies_ticker microservice
+Module containing the quotes_by_day_session microservice
 """
-from typing import Optional, List, Dict, Any
+from datetime import date, time
+from typing import Optional, Dict
 
 from app.abstract.services.web_service.config import MicroserviceConfig, MicroserviceListResponse
 from app.abstract.services.web_service.readonly_microservice import ReadOnlyMicroservice
 from fastapi import APIRouter, Query, WebSocket
 from fastapi_utils.cbv import cbv
 
-from .config import NomicsCurrenciesTickerDbQueryConfig
+from .config import QuotesByDaySessionDbQueryConfig
 
-currencies_ticker_router = APIRouter()
+quotes_by_day_session_router = APIRouter()
 microservice_config = MicroserviceConfig()
 
 
-@cbv(currencies_ticker_router)
-class CurrenciesTickerMicroservice(ReadOnlyMicroservice):
+@cbv(quotes_by_day_session_router)
+class QuotesByDaySessionMicroservice(ReadOnlyMicroservice):
     """
-    Returns data for almost realtime price of the digital currencies to be displayed in a front end application
+    Returns data for quotes by day session to be displayed in a front end application
     """
 
     def __init__(self):
-        db_query_config = NomicsCurrenciesTickerDbQueryConfig()
+        db_query_config = QuotesByDaySessionDbQueryConfig()
         query_param_cast_map: Dict[str, str] = {
-            'price_date': 'date',
-            'currency': 'text'
+            'trade_date': 'date',
+            'update_time': 'time',
+            'product_code': 'text',
         }
         super().__init__(config=db_query_config, query_param_cast_map=query_param_cast_map)
 
-    @currencies_ticker_router.get('/currencies-ticker', response_model=MicroserviceListResponse)
+    @quotes_by_day_session_router.get('/quotes-by-day-session', response_model=MicroserviceListResponse)
     def list(self,
              q: Optional[str] = Query(
                  '',
                  title="SQL Query string",
                  description="A more fluid way to filter using actual SQL queries starting with optional 'WHERE'",
-                 example="WHERE price_date = '2020-12-24'::date and id = 'ETH'"
+                 example="WHERE trade_date = '2020-12-24'::date"
              ),
-             currency: Optional[str] = Query(None, description='The id of the currency e.g. BTC for bitcoin',
-                                             example='BTC'),
-             price_date: Optional[str] = Query(None, description='The price date as string YYYY-MM-DD e.g. 2020-12-24',
-                                               example='2020-12-24'),
+             trade_date: Optional[str] = Query(None, description='The trade date in YYYY-MM-DD', example='2020-12-24'),
+             update_time: Optional[str] = Query(None, description='The update time in hh:mm:ss', example='16:03:00'),
+             product_code: Optional[str] = Query(None, description='The product code for the trade',
+                                                 example='CRUDE OIL'),
              skip: Optional[int] = Query(0, ge=0),
              limit: Optional[int] = Query(
                  microservice_config.default_pagination_limit,
                  le=microservice_config.maximum_pagination_limit)
              ):
-        q_from_params = self.generate_q_param_from_params(price_date=price_date, currency=currency)
+        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
+                                                          product_code=product_code)
         q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
 
         result = self._list(limit=limit, offset=skip, q=q, should_fetch_total=True)
@@ -54,18 +57,20 @@ class CurrenciesTickerMicroservice(ReadOnlyMicroservice):
     def get_one(self, *args, **kwargs):
         pass
 
-    @currencies_ticker_router.websocket('/currencies-ticker')
+    @quotes_by_day_session_router.websocket('/quotes-by-day-session')
     async def websocket_list(self, websocket: WebSocket,
                              q: Optional[str] = Query(''),
-                             currency: Optional[str] = Query(None),
-                             price_date: Optional[str] = Query(None),
+                             trade_date: Optional[str] = Query(None),
+                             update_time: Optional[str] = Query(None),
+                             product_code: Optional[str] = Query(None),
                              skip: Optional[int] = Query(0, ge=0),
                              limit: Optional[int] = Query(
                                  microservice_config.default_pagination_limit,
                                  le=microservice_config.maximum_pagination_limit
                              )):
         """Sends list data via the websocket medium"""
-        q_from_params = self.generate_q_param_from_params(price_date=price_date, currency=currency)
+        q_from_params = self.generate_q_param_from_params(trade_date=trade_date, update_time=update_time,
+                                                          product_code=product_code)
         q = ' AND '.join(filter(lambda x: x.strip() != '', [q, q_from_params]))
 
         await super().websocket_list(websocket=websocket, response_model=MicroserviceListResponse,
