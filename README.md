@@ -3,10 +3,12 @@
 This is an integrated API that is meant to provide certain data to the clients as extracted from a range of databases
 in a warehouse
 
+<!--
 ## Demos
 
 - [Demo Swagger docs](https://warehouse.sopherapps.com/docs)
 - [Demo ReDoc docs](https://warehouse.sopherapps.com/redoc)
+-->
 
 ## Dependecies
 
